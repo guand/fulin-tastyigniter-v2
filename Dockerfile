@@ -19,6 +19,7 @@ RUN set -ex; \
 		certbot \
 		python3-certbot-apache \
 		cron \
+		gettext-base \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\

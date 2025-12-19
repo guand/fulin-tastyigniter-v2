@@ -80,9 +80,11 @@ if [ "$ENABLE_SSL" = "true" ]; then
     if [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] && [ -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
         echo "SSL certificates found for $DOMAIN"
 
-        # Generate Apache SSL config from template
-        export APACHE_DOCUMENT_ROOT
-        envsubst '${DOMAIN} ${EMAIL} ${APACHE_DOCUMENT_ROOT}' < /etc/apache2/apache-ssl.conf.template > /etc/apache2/sites-available/000-default-ssl.conf
+        # Generate Apache SSL config from template using sed
+        sed -e "s|\${DOMAIN}|${DOMAIN}|g" \
+            -e "s|\${EMAIL}|${EMAIL}|g" \
+            -e "s|\${APACHE_DOCUMENT_ROOT}|${APACHE_DOCUMENT_ROOT}|g" \
+            /etc/apache2/apache-ssl.conf.template > /etc/apache2/sites-available/000-default-ssl.conf
 
         # Enable SSL site
         a2ensite 000-default-ssl.conf

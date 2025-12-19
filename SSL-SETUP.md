@@ -96,23 +96,10 @@ After successfully obtaining the certificate:
 ## Port Mapping
 
 The docker-compose configuration maps:
-- Port 8001 → Container Port 80 (HTTP)
-- Port 8443 → Container Port 443 (HTTPS)
+- Port 80 → Container Port 80 (HTTP)
+- Port 443 → Container Port 443 (HTTPS)
 
-If you want to use standard ports (80/443) instead:
-
-Edit `docker-compose.yml`:
-```yaml
-ports:
-  - 80:80
-  - 443:443
-```
-
-Then restart:
-```bash
-docker-compose down
-docker-compose up -d
-```
+The application is accessible directly on standard HTTP/HTTPS ports.
 
 ## Certificate Renewal
 

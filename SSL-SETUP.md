@@ -24,15 +24,13 @@ cp .env.example .env
 Edit the `.env` file and set:
 
 ```bash
-DOMAIN=yourdomain.com
-EMAIL=your-email@example.com
+DOMAIN=fulin-restaurant.com
+EMAIL=guan3d@gmail.com
 ENABLE_SSL=false  # Keep this false initially
-APP_URL=http://yourdomain.com
+APP_URL=http://fulin-restaurant.com
 ```
 
-Replace:
-- `yourdomain.com` with your actual domain
-- `your-email@example.com` with a valid email address (for certificate expiry notifications)
+Update the email address if you want to use a different one for certificate expiry notifications.
 
 ### Step 2: Start the Application
 
@@ -53,10 +51,10 @@ docker-compose logs -f tastyigniter-app
 Make sure your site is accessible via HTTP:
 
 ```bash
-curl http://yourdomain.com
+curl http://fulin-restaurant.com
 ```
 
-Or visit `http://yourdomain.com` in your browser.
+Or visit `http://fulin-restaurant.com` in your browser.
 
 ### Step 4: Obtain SSL Certificate
 
@@ -80,7 +78,7 @@ After successfully obtaining the certificate:
 1. Edit your `.env` file:
    ```bash
    ENABLE_SSL=true
-   APP_URL=https://yourdomain.com
+   APP_URL=https://fulin-restaurant.com
    ```
 
 2. Restart the container:
@@ -90,7 +88,7 @@ After successfully obtaining the certificate:
 
 3. Your site should now be accessible via HTTPS:
    ```
-   https://yourdomain.com
+   https://fulin-restaurant.com
    ```
 
 ## Port Mapping
@@ -132,7 +130,7 @@ docker-compose exec tastyigniter-app certbot certificates
 
 **Common causes**:
 1. Domain doesn't point to your server
-   - Solution: Check DNS settings with `dig yourdomain.com` or `nslookup yourdomain.com`
+   - Solution: Check DNS settings with `dig fulin-restaurant.com` or `nslookup fulin-restaurant.com`
 
 2. Ports 80/443 blocked by firewall
    - Solution: Open ports in your firewall (ufw, iptables, cloud provider security groups)
@@ -159,7 +157,7 @@ docker-compose exec tastyigniter-app init-ssl.sh
 
 **Solution**: Update your APP_URL in `.env` to use `https://`:
 ```bash
-APP_URL=https://yourdomain.com
+APP_URL=https://fulin-restaurant.com
 ```
 
 Then rebuild and restart:
@@ -208,9 +206,9 @@ Then rebuild and restart.
 ### Certificate Locations
 
 Inside the container:
-- Certificates: `/etc/letsencrypt/live/yourdomain.com/`
-- Fullchain: `/etc/letsencrypt/live/yourdomain.com/fullchain.pem`
-- Private key: `/etc/letsencrypt/live/yourdomain.com/privkey.pem`
+- Certificates: `/etc/letsencrypt/live/fulin-restaurant.com/`
+- Fullchain: `/etc/letsencrypt/live/fulin-restaurant.com/fullchain.pem`
+- Private key: `/etc/letsencrypt/live/fulin-restaurant.com/privkey.pem`
 
 These are stored in the Docker volume `letsencrypt` and persist across container restarts.
 
@@ -226,8 +224,8 @@ To use multiple domains or subdomains:
      --apache \
      --non-interactive \
      --agree-tos \
-     --email your-email@example.com \
-     --domains yourdomain.com,www.yourdomain.com,subdomain.yourdomain.com
+     --email guan3d@gmail.com \
+     --domains fulin-restaurant.com,www.fulin-restaurant.com
    ```
 
 2. Update `apache-ssl.conf.template` to include ServerAlias directives
@@ -243,7 +241,7 @@ If you have your own SSL certificates (not from Let's Encrypt):
 ### Testing SSL Configuration
 
 Use SSL Labs to test your SSL configuration:
-https://www.ssllabs.com/ssltest/analyze.html?d=yourdomain.com
+https://www.ssllabs.com/ssltest/analyze.html?d=fulin-restaurant.com
 
 ## Security Recommendations
 

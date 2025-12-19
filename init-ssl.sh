@@ -28,7 +28,7 @@ fi
 
 echo "This script will obtain an SSL certificate from Let's Encrypt"
 echo "Make sure:"
-echo "  1. Your domain $DOMAIN points to this server's public IP"
+echo "  1. Both $DOMAIN and www.$DOMAIN point to this server's public IP"
 echo "  2. Ports 80 and 443 are accessible from the internet"
 echo "  3. Apache is running and responding to HTTP requests"
 echo ""
@@ -42,13 +42,13 @@ fi
 echo ""
 echo "Obtaining SSL certificate..."
 
-# Run certbot to obtain certificate
+# Run certbot to obtain certificate for both non-www and www versions
 certbot certonly \
     --apache \
     --non-interactive \
     --agree-tos \
     --email "$EMAIL" \
-    --domains "$DOMAIN" \
+    --domains "$DOMAIN,www.$DOMAIN" \
     --keep-until-expiring
 
 if [ $? -eq 0 ]; then
@@ -62,7 +62,8 @@ if [ $? -eq 0 ]; then
     echo "  2. Set ENABLE_SSL=true in your .env file"
     echo "  3. Start the container: docker-compose up -d"
     echo ""
-    echo "Your site will be accessible at: https://$DOMAIN"
+    echo "Your site will be accessible at: https://www.$DOMAIN"
+    echo "Requests to https://$DOMAIN will redirect to https://www.$DOMAIN"
 else
     echo ""
     echo "=========================================="

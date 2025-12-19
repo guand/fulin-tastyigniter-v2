@@ -1,5 +1,6 @@
 <VirtualHost *:80>
     ServerName ${DOMAIN}
+    ServerAlias www.${DOMAIN}
     ServerAdmin ${EMAIL}
     DocumentRoot ${APACHE_DOCUMENT_ROOT}
 
@@ -11,10 +12,10 @@
         Require all granted
     </Directory>
 
-    # Redirect all HTTP traffic to HTTPS (only when SSL is enabled)
+    # Redirect all HTTP traffic to HTTPS www version
     RewriteEngine on
     RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    RewriteRule ^(.*)$ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
     <Directory ${APACHE_DOCUMENT_ROOT}>
         Options Indexes FollowSymLinks
@@ -26,8 +27,32 @@
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 
+# HTTPS VirtualHost for non-www - redirects to www
 <VirtualHost *:443>
     ServerName ${DOMAIN}
+    ServerAdmin ${EMAIL}
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/${DOMAIN}/privkey.pem
+
+    # Modern SSL configuration
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    SSLHonorCipherOrder off
+    SSLSessionTickets off
+
+    # Redirect to www version
+    RewriteEngine on
+    RewriteRule ^(.*)$ https://www.${DOMAIN}$1 [R=301,L]
+
+    ErrorLog ${APACHE_LOG_DIR}/ssl_error.log
+    CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined
+</VirtualHost>
+
+# HTTPS VirtualHost for www - main site
+<VirtualHost *:443>
+    ServerName www.${DOMAIN}
     ServerAdmin ${EMAIL}
     DocumentRoot ${APACHE_DOCUMENT_ROOT}
 

@@ -9,8 +9,6 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - tastyigniter-storage:/var/www/html/storage
-      - tastyigniter-public:/var/www/html/public
       - letsencrypt:/etc/letsencrypt
       - certbot-webroot:/var/www/certbot
     environment:
@@ -47,7 +45,5 @@ services:
 
 volumes:
   tastyigniter-database:
-  tastyigniter-storage:
-  tastyigniter-public:
   letsencrypt:
   certbot-webroot:

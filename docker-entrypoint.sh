@@ -8,6 +8,21 @@ DOMAIN="${DOMAIN:-localhost}"
 EMAIL="${EMAIL:-admin@localhost}"
 ENABLE_SSL="${ENABLE_SSL:-false}"
 
+# Create necessary storage subdirectories if they don't exist
+mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/storage/app/media
+mkdir -p /var/www/html/storage/app/uploads
+mkdir -p /var/www/html/storage/framework/cache
+mkdir -p /var/www/html/storage/framework/sessions
+mkdir -p /var/www/html/storage/framework/views
+mkdir -p /var/www/html/storage/logs
+mkdir -p /var/www/html/storage/temp
+
+# Create symbolic link from public/storage to storage/app/public if it doesn't exist
+if [ ! -L /var/www/html/public/storage ]; then
+    ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
+fi
+
 # Fix permissions for storage and public directories
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public
@@ -70,7 +85,21 @@ if grep -q "^APP_KEY=$" /var/www/html/.env 2>/dev/null; then
 	chmod -R 775 /var/www/html/public
 fi
 
-# Ensure correct permissions on every container start
+# Ensure storage directories exist and have correct permissions on every container start
+mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/storage/app/media
+mkdir -p /var/www/html/storage/app/uploads
+mkdir -p /var/www/html/storage/framework/cache
+mkdir -p /var/www/html/storage/framework/sessions
+mkdir -p /var/www/html/storage/framework/views
+mkdir -p /var/www/html/storage/logs
+mkdir -p /var/www/html/storage/temp
+
+# Ensure symbolic link exists
+if [ ! -L /var/www/html/public/storage ]; then
+    ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
+fi
+
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public
 chown -R www-data:www-data /var/www/.composer

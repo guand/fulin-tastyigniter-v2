@@ -20,6 +20,10 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
+# Create public media directories for Media Manager
+mkdir -p /var/www/html/public/app
+mkdir -p /var/www/html/public/uploads
+
 # Create symbolic link from public/storage to storage/app/public if it doesn't exist
 if [ ! -L /var/www/html/public/storage ]; then
     ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
@@ -80,6 +84,9 @@ if grep -q "^APP_KEY=$" /var/www/html/.env 2>/dev/null; then
 	# Run TastyIgniter installation
 	php artisan igniter:install --no-interaction
 
+	# Create storage link for public access
+	php artisan storage:link --force
+
 	# Clear cache and regenerate assets after installation
 	php artisan cache:clear
 	php artisan view:clear
@@ -103,10 +110,17 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
-# Ensure symbolic link exists
+# Create public media directories for Media Manager
+mkdir -p /var/www/html/public/app
+mkdir -p /var/www/html/public/uploads
+
+# Ensure symbolic link exists and Laravel storage link is created
 if [ ! -L /var/www/html/public/storage ]; then
     ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
 fi
+
+# Run Laravel storage link command to ensure proper symlinks
+php artisan storage:link --force 2>/dev/null || true
 
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public

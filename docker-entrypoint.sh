@@ -66,6 +66,9 @@ QUEUE_CONNECTION=sync
 REDIS_HOST=${REDIS_HOST:-127.0.0.1}
 REDIS_PASSWORD=null
 REDIS_PORT=6379
+
+FILESYSTEM_DISK=local
+MEDIA_DISK=media
 EOF
 	fi
 	
@@ -87,9 +90,17 @@ if grep -q "^APP_KEY=$" /var/www/html/.env 2>/dev/null; then
 	# Create storage link for public access
 	php artisan storage:link --force
 
+	# Create .gitkeep files to ensure directories are preserved
+	touch /var/www/html/storage/app/public/.gitkeep
+	touch /var/www/html/storage/app/media/.gitkeep
+	touch /var/www/html/storage/app/uploads/.gitkeep
+	touch /var/www/html/public/app/.gitkeep
+	touch /var/www/html/public/uploads/.gitkeep
+
 	# Clear cache and regenerate assets after installation
 	php artisan cache:clear
 	php artisan view:clear
+	php artisan config:clear
 
 	# set permissions after installation for newly created files
 	chown -R www-data:www-data /var/www/html/storage
@@ -121,6 +132,9 @@ fi
 
 # Run Laravel storage link command to ensure proper symlinks
 php artisan storage:link --force 2>/dev/null || true
+
+# Clear config cache to ensure fresh configuration
+php artisan config:clear 2>/dev/null || true
 
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public

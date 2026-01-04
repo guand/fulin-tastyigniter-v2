@@ -14,6 +14,10 @@ chown -R www-data:www-data /var/www/html/public
 chmod -R 775 /var/www/html/storage
 chmod -R 775 /var/www/html/public
 
+# Fix permissions for Composer cache directory
+chown -R www-data:www-data /var/www/.composer
+chmod -R 775 /var/www/.composer
+
 # Create .env file if it doesn't exist
 if [ ! -f '/var/www/html/.env' ]; then
 	if [ -f '/var/www/html/.env.example' ]; then
@@ -69,8 +73,10 @@ fi
 # Ensure correct permissions on every container start
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public
+chown -R www-data:www-data /var/www/.composer
 chmod -R 775 /var/www/html/storage
 chmod -R 775 /var/www/html/public
+chmod -R 775 /var/www/.composer
 
 # Configure Apache SSL if enabled
 if [ "$ENABLE_SSL" = "true" ]; then

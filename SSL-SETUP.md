@@ -220,7 +220,7 @@ To use multiple domains or subdomains:
 
 1. Obtain certificates for all domains:
    ```bash
-   docker-compose exec tastyigniter-app certbot certonly \
+   docker compose exec tastyigniter-app certbot certonly \
      --apache \
      --non-interactive \
      --agree-tos \

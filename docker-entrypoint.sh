@@ -20,9 +20,17 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
-# Create public media directories for Media Manager
+# Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
+mkdir -p /var/www/html/public/storage/app/media
+mkdir -p /var/www/html/public/storage/app/uploads
+mkdir -p /var/www/html/public/storage/app/public
+
+# Create uploads subdirectory structure
+mkdir -p /var/www/html/public/uploads/images
+mkdir -p /var/www/html/public/uploads/media
+mkdir -p /var/www/html/public/uploads/temp
 
 # Create symbolic link from public/storage to storage/app/public if it doesn't exist
 if [ ! -L /var/www/html/public/storage ]; then
@@ -96,6 +104,9 @@ if grep -q "^APP_KEY=$" /var/www/html/.env 2>/dev/null; then
 	touch /var/www/html/storage/app/uploads/.gitkeep
 	touch /var/www/html/public/app/.gitkeep
 	touch /var/www/html/public/uploads/.gitkeep
+	touch /var/www/html/public/uploads/images/.gitkeep
+	touch /var/www/html/public/uploads/media/.gitkeep
+	touch /var/www/html/public/uploads/temp/.gitkeep
 
 	# Clear cache and regenerate assets after installation
 	php artisan cache:clear
@@ -121,9 +132,17 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
-# Create public media directories for Media Manager
+# Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
+mkdir -p /var/www/html/public/storage/app/media
+mkdir -p /var/www/html/public/storage/app/uploads
+mkdir -p /var/www/html/public/storage/app/public
+
+# Create uploads subdirectory structure
+mkdir -p /var/www/html/public/uploads/images
+mkdir -p /var/www/html/public/uploads/media
+mkdir -p /var/www/html/public/uploads/temp
 
 # Ensure symbolic link exists and Laravel storage link is created
 if [ ! -L /var/www/html/public/storage ]; then

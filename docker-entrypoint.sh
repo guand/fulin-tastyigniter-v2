@@ -12,11 +12,13 @@ ENABLE_SSL="${ENABLE_SSL:-false}"
 mkdir -p /var/www/html/storage/app/public
 mkdir -p /var/www/html/storage/app/media
 mkdir -p /var/www/html/storage/app/uploads
-mkdir -p /var/www/html/storage/framework/cache
+mkdir -p /var/www/html/storage/framework/cache/data
 mkdir -p /var/www/html/storage/framework/sessions
 mkdir -p /var/www/html/storage/framework/views
 mkdir -p /var/www/html/storage/logs
 mkdir -p /var/www/html/storage/temp
+mkdir -p /var/www/html/storage/system/combiner
+mkdir -p /var/www/html/storage/system/cache
 
 # Create symbolic link from public/storage to storage/app/public if it doesn't exist
 if [ ! -L /var/www/html/public/storage ]; then
@@ -77,7 +79,11 @@ if grep -q "^APP_KEY=$" /var/www/html/.env 2>/dev/null; then
 	
 	# Run TastyIgniter installation
 	php artisan igniter:install --no-interaction
-	
+
+	# Clear cache and regenerate assets after installation
+	php artisan cache:clear
+	php artisan view:clear
+
 	# set permissions after installation for newly created files
 	chown -R www-data:www-data /var/www/html/storage
 	chown -R www-data:www-data /var/www/html/public
@@ -89,11 +95,13 @@ fi
 mkdir -p /var/www/html/storage/app/public
 mkdir -p /var/www/html/storage/app/media
 mkdir -p /var/www/html/storage/app/uploads
-mkdir -p /var/www/html/storage/framework/cache
+mkdir -p /var/www/html/storage/framework/cache/data
 mkdir -p /var/www/html/storage/framework/sessions
 mkdir -p /var/www/html/storage/framework/views
 mkdir -p /var/www/html/storage/logs
 mkdir -p /var/www/html/storage/temp
+mkdir -p /var/www/html/storage/system/combiner
+mkdir -p /var/www/html/storage/system/cache
 
 # Ensure symbolic link exists
 if [ ! -L /var/www/html/public/storage ]; then

@@ -23,19 +23,21 @@ mkdir -p /var/www/html/storage/system/cache
 # Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
-mkdir -p /var/www/html/public/storage/app/media
-mkdir -p /var/www/html/public/storage/app/uploads
-mkdir -p /var/www/html/public/storage/app/public
 
 # Create uploads subdirectory structure
 mkdir -p /var/www/html/public/uploads/images
 mkdir -p /var/www/html/public/uploads/media
 mkdir -p /var/www/html/public/uploads/temp
 
-# Create symbolic link from public/storage to storage/app/public if it doesn't exist
-if [ ! -L /var/www/html/public/storage ]; then
-    ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
+# IMPORTANT: Remove /var/www/html/public/storage if it's a directory (not a symlink)
+# This fixes the issue where docker volumes might create it as a directory
+if [ -d /var/www/html/public/storage ] && [ ! -L /var/www/html/public/storage ]; then
+    echo "Removing directory /var/www/html/public/storage to create symlink..."
+    rm -rf /var/www/html/public/storage
 fi
+
+# Create symbolic link from public/storage to storage/app/public
+ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
 
 # Fix permissions for storage and public directories
 chown -R www-data:www-data /var/www/html/storage
@@ -135,25 +137,34 @@ mkdir -p /var/www/html/storage/system/cache
 # Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
-mkdir -p /var/www/html/public/storage/app/media
-mkdir -p /var/www/html/public/storage/app/uploads
-mkdir -p /var/www/html/public/storage/app/public
 
 # Create uploads subdirectory structure
 mkdir -p /var/www/html/public/uploads/images
 mkdir -p /var/www/html/public/uploads/media
 mkdir -p /var/www/html/public/uploads/temp
 
-# Ensure symbolic link exists and Laravel storage link is created
-if [ ! -L /var/www/html/public/storage ]; then
-    ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
+# IMPORTANT: Remove /var/www/html/public/storage if it's a directory (not a symlink)
+if [ -d /var/www/html/public/storage ] && [ ! -L /var/www/html/public/storage ]; then
+    echo "Removing directory /var/www/html/public/storage to create symlink..."
+    rm -rf /var/www/html/public/storage
 fi
+
+# Create symbolic link from public/storage to storage/app/public
+ln -sf /var/www/html/storage/app/public /var/www/html/public/storage
 
 # Run Laravel storage link command to ensure proper symlinks
 php artisan storage:link --force 2>/dev/null || true
 
 # Clear config cache to ensure fresh configuration
 php artisan config:clear 2>/dev/null || true
+
+# Debug: Show directory structure
+echo "=== Directory Structure Check ==="
+echo "Storage symlink status:"
+ls -la /var/www/html/public/ | grep storage || echo "No storage symlink found"
+echo "Storage app directory:"
+ls -la /var/www/html/storage/app/ || echo "Storage app directory missing"
+echo "================================="
 
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public

@@ -42,6 +42,15 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Configure PHP upload settings for media manager
+RUN { \
+		echo 'upload_max_filesize=64M'; \
+		echo 'post_max_size=64M'; \
+		echo 'max_file_uploads=20'; \
+		echo 'memory_limit=256M'; \
+		echo 'max_execution_time=300'; \
+	} > /usr/local/etc/php/conf.d/uploads.ini
+
 RUN a2enmod rewrite ssl headers
 
 # Configure Apache DocumentRoot to public folder (Laravel/TastyIgniter v4 structure)

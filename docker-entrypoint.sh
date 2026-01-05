@@ -20,6 +20,7 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
+
 # Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
@@ -44,6 +45,11 @@ chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/public
 chmod -R 775 /var/www/html/storage
 chmod -R 775 /var/www/html/public
+
+# Create and set permissions for log file (important when running docker with sudo)
+touch /var/www/html/storage/logs/laravel.log
+chown www-data:www-data /var/www/html/storage/logs/laravel.log
+chmod 664 /var/www/html/storage/logs/laravel.log
 
 # Fix permissions for Composer cache directory
 chown -R www-data:www-data /var/www/.composer
@@ -134,6 +140,7 @@ mkdir -p /var/www/html/storage/temp
 mkdir -p /var/www/html/storage/system/combiner
 mkdir -p /var/www/html/storage/system/cache
 
+
 # Create ALL possible public media directories for Media Manager
 mkdir -p /var/www/html/public/app
 mkdir -p /var/www/html/public/uploads
@@ -172,6 +179,11 @@ chown -R www-data:www-data /var/www/.composer
 chmod -R 775 /var/www/html/storage
 chmod -R 775 /var/www/html/public
 chmod -R 775 /var/www/.composer
+
+# Create and set permissions for log file on every restart (important when running docker with sudo)
+touch /var/www/html/storage/logs/laravel.log
+chown www-data:www-data /var/www/html/storage/logs/laravel.log
+chmod 664 /var/www/html/storage/logs/laravel.log
 
 # Configure Apache SSL if enabled
 if [ "$ENABLE_SSL" = "true" ]; then

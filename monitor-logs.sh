@@ -1,13 +1,19 @@
 #!/bin/bash
 # Script to monitor TastyIgniter logs for media manager uploads
 
+# Use sudo for docker commands if not in docker group
+DOCKER_CMD="docker"
+if ! docker ps >/dev/null 2>&1; then
+    DOCKER_CMD="sudo docker"
+fi
+
 echo "=== TastyIgniter Log Monitor ==="
 echo ""
 
 # Check if container is running
-if ! docker compose ps tastyigniter-app | grep -q "Up"; then
+if ! $DOCKER_CMD compose ps tastyigniter-app | grep -q "Up"; then
     echo "Error: tastyigniter-app container is not running"
-    echo "Start it with: docker compose up -d"
+    echo "Start it with: $DOCKER_CMD compose up -d"
     exit 1
 fi
 
@@ -16,20 +22,20 @@ setup_logs() {
     echo "Checking log directory setup..."
 
     # Check if storage/logs directory exists
-    if ! docker compose exec tastyigniter-app test -d /var/www/html/storage/logs; then
+    if ! $DOCKER_CMD compose exec tastyigniter-app test -d /var/www/html/storage/logs; then
         echo "Creating storage/logs directory..."
-        docker compose exec tastyigniter-app mkdir -p /var/www/html/storage/logs
-        docker compose exec tastyigniter-app chmod -R 775 /var/www/html/storage/logs
-        docker compose exec tastyigniter-app chown -R www-data:www-data /var/www/html/storage/logs
+        $DOCKER_CMD compose exec tastyigniter-app mkdir -p /var/www/html/storage/logs
+        $DOCKER_CMD compose exec tastyigniter-app chmod -R 775 /var/www/html/storage/logs
+        $DOCKER_CMD compose exec tastyigniter-app chown -R www-data:www-data /var/www/html/storage/logs
         echo "Log directory created successfully"
     fi
 
     # Check if log file exists, if not create it
-    if ! docker compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
+    if ! $DOCKER_CMD compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
         echo "Creating laravel.log file..."
-        docker compose exec tastyigniter-app touch /var/www/html/storage/logs/laravel.log
-        docker compose exec tastyigniter-app chmod 664 /var/www/html/storage/logs/laravel.log
-        docker compose exec tastyigniter-app chown www-data:www-data /var/www/html/storage/logs/laravel.log
+        $DOCKER_CMD compose exec tastyigniter-app touch /var/www/html/storage/logs/laravel.log
+        $DOCKER_CMD compose exec tastyigniter-app chmod 664 /var/www/html/storage/logs/laravel.log
+        $DOCKER_CMD compose exec tastyigniter-app chown www-data:www-data /var/www/html/storage/logs/laravel.log
         echo "Log file created successfully"
     fi
 
@@ -46,41 +52,41 @@ monitor_log() {
             echo "Monitoring Application Logs (Laravel)..."
             echo "Press Ctrl+C to stop"
             echo "---"
-            docker compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log
+            $DOCKER_CMD compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log
             ;;
         "apache-error")
             echo "Monitoring Apache Error Logs..."
             echo "Press Ctrl+C to stop"
             echo "---"
-            docker compose exec tastyigniter-app tail -f /var/log/apache2/error.log
+            $DOCKER_CMD compose exec tastyigniter-app tail -f /var/log/apache2/error.log
             ;;
         "apache-access")
             echo "Monitoring Apache Access Logs..."
             echo "Press Ctrl+C to stop"
             echo "---"
-            docker compose exec tastyigniter-app tail -f /var/log/apache2/access.log
+            $DOCKER_CMD compose exec tastyigniter-app tail -f /var/log/apache2/access.log
             ;;
         "docker")
             echo "Monitoring Docker Container Logs..."
             echo "Press Ctrl+C to stop"
             echo "---"
-            docker compose logs -f tastyigniter-app
+            $DOCKER_CMD compose logs -f tastyigniter-app
             ;;
         "all")
             echo "Showing recent logs from all sources..."
             echo ""
             echo "=== Docker Logs (last 20 lines) ==="
-            docker compose logs --tail=20 tastyigniter-app
+            $DOCKER_CMD compose logs --tail=20 tastyigniter-app
             echo ""
             echo "=== Application Logs (last 20 lines) ==="
-            if docker compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
-                docker compose exec tastyigniter-app tail -n 20 /var/www/html/storage/logs/laravel.log
+            if $DOCKER_CMD compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
+                $DOCKER_CMD compose exec tastyigniter-app tail -n 20 /var/www/html/storage/logs/laravel.log
             else
                 echo "No application logs found"
             fi
             echo ""
             echo "=== Apache Error Logs (last 20 lines) ==="
-            docker compose exec tastyigniter-app tail -n 20 /var/log/apache2/error.log 2>/dev/null || echo "Apache logs not available"
+            $DOCKER_CMD compose exec tastyigniter-app tail -n 20 /var/log/apache2/error.log 2>/dev/null || echo "Apache logs not available"
             echo ""
             ;;
         "upload")
@@ -88,13 +94,13 @@ monitor_log() {
             echo "Filtering for: upload, media, file, storage keywords"
             echo "Press Ctrl+C to stop"
             echo "---"
-            if docker compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
-                docker compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log | grep -i --line-buffered "upload\|media\|file\|storage"
+            if $DOCKER_CMD compose exec tastyigniter-app test -f /var/www/html/storage/logs/laravel.log; then
+                $DOCKER_CMD compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log | grep -i --line-buffered "upload\|media\|file\|storage"
             else
                 echo "Log file not found. Creating it first..."
                 setup_logs
                 echo "Now monitoring for uploads..."
-                docker compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log | grep -i --line-buffered "upload\|media\|file\|storage"
+                $DOCKER_CMD compose exec tastyigniter-app tail -f /var/www/html/storage/logs/laravel.log | grep -i --line-buffered "upload\|media\|file\|storage"
             fi
             ;;
         *)

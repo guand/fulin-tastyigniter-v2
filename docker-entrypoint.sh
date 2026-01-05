@@ -10,6 +10,7 @@ ENABLE_SSL="${ENABLE_SSL:-false}"
 
 # Create necessary storage subdirectories if they don't exist
 mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/storage/app/public/media/uploads
 mkdir -p /var/www/html/storage/app/media
 mkdir -p /var/www/html/storage/app/uploads
 mkdir -p /var/www/html/storage/framework/cache/data
@@ -130,6 +131,7 @@ fi
 
 # Ensure storage directories exist and have correct permissions on every container start
 mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/storage/app/public/media/uploads
 mkdir -p /var/www/html/storage/app/media
 mkdir -p /var/www/html/storage/app/uploads
 mkdir -p /var/www/html/storage/framework/cache/data
